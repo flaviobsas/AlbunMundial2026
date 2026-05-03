@@ -472,8 +472,201 @@
   #loading-overlay .loading-text { font-size: 13px; color: #6b7280; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; border-radius: 10px; padding: 9px 20px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 100; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  .toast { position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; border-radius: 10px; padding: 9px 20px; font-size: 13px; font-weight: 500; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 100; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
   .toast.show { opacity: 1; }
+
+  /* Espacio para la barra inferior */
+  .container { padding-bottom: 90px; }
+
+  /* ── Barra de navegación inferior ── */
+  #bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 68px;
+    background: white;
+    border-top: 1px solid #e2e5ec;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 16px;
+    z-index: 150;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+    transition: background 0.12s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .nav-btn:hover { background: #f4f4f5; }
+  .nav-btn svg { flex-shrink: 0; }
+  .nav-btn span { font-size: 10px; font-weight: 600; color: #6b7280; letter-spacing: 0.02em; }
+  .nav-btn.active span { color: #111827; }
+  .nav-btn.active svg { stroke: #111827; }
+  .nav-btn.edit-active { background: #fef3c7; }
+  .nav-btn.edit-active span { color: #b45309; }
+  .nav-btn.edit-active svg { stroke: #b45309; }
+
+  /* Botón escáner — destacado en el centro */
+  #nav-scan-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #111827 0%, #374151 100%);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    transition: transform 0.15s, box-shadow 0.15s;
+    margin-top: -20px;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #nav-scan-btn:hover { transform: scale(1.07); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+  #nav-scan-btn:active { transform: scale(0.95); }
+  #nav-scan-btn svg { stroke: white; }
+
+  /* ── Modal escáner ── */
+  #scanner-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: rgba(0,0,0,0.85);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+  #scanner-modal.open { display: flex; }
+  #scanner-inner {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    width: min(420px, 96vw);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+  }
+  #scanner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  #scanner-header h3 { font-size: 15px; font-weight: 600; color: #111827; }
+  #scanner-close {
+    width: 32px; height: 32px;
+    border-radius: 8px; border: 1px solid #e2e5ec;
+    background: #f4f4f5; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #6b7280;
+  }
+  #scanner-close:hover { background: #e4e4e7; }
+
+  #video-wrap {
+    position: relative;
+    background: #000;
+    width: 100%;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+  }
+  #scanner-video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* Marco de enfoque */
+  #scan-frame {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 160px; height: 200px;
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 12px;
+    box-shadow: 0 0 0 1000px rgba(0,0,0,0.45);
+  }
+  #scan-frame::before, #scan-frame::after {
+    content: '';
+    position: absolute;
+    width: 24px; height: 24px;
+    border-color: #22c55e;
+    border-style: solid;
+  }
+  #scan-frame::before { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-radius: 10px 0 0 0; }
+  #scan-frame::after  { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-radius: 0 0 10px 0; }
+
+  #scanner-hint {
+    position: absolute;
+    bottom: 12px; left: 0; right: 0;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+  }
+
+  #scanner-body { padding: 16px 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+
+  #scan-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: #111827;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.12s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  #scan-btn:hover { background: #374151; }
+  #scan-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+  #scan-result {
+    display: none;
+    border-radius: 12px;
+    border: 1px solid #e2e5ec;
+    overflow: hidden;
+  }
+  #scan-result.show { display: block; }
+  #scan-result-inner { padding: 14px 16px; }
+  #scan-result-label { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  #scan-result-name { font-size: 16px; font-weight: 700; color: #111827; margin-bottom: 2px; }
+  #scan-result-sub  { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+  #scan-result-actions { display: flex; gap: 8px; }
+  .scan-action-btn {
+    flex: 1; padding: 10px; border-radius: 10px; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: background 0.12s;
+  }
+  .scan-confirm { background: #dcfce7; color: #15803d; }
+  .scan-confirm:hover { background: #bbf7d0; }
+  .scan-retry   { background: #f4f4f5; color: #374151; }
+  .scan-retry:hover { background: #e4e4e7; }
+
+  #scan-status {
+    font-size: 13px; color: #6b7280; text-align: center;
+    min-height: 20px;
+  }
+  #scan-status.processing { color: #b45309; }
+  #scan-status.success { color: #15803d; font-weight: 600; }
+  #scan-status.error { color: #b91c1c; }
 </style>
 </head>
 <body>
@@ -501,10 +694,6 @@
   </div>
 
   <div class="toolbar">
-    <button class="edit-btn" id="edit-btn" onclick="toggleEdit()">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Editar
-    </button>
     <input type="text" id="search" placeholder="Ej: ARG 1, MEX, Brasil..." oninput="applyFilter()">
     <button class="clear-btn" id="clear-btn" onclick="clearFilter()">✕ Quitar filtro</button>
     <button class="filter-btn active-all" data-f="all" onclick="setFilter('all')">Todas</button>
@@ -532,6 +721,64 @@
   <div class="groups" id="groups-container"></div>
 </div>
 <div class="toast" id="toast"></div>
+
+<!-- Barra de navegación inferior -->
+<nav id="bottom-nav">
+  <button class="nav-btn" id="nav-edit-btn" onclick="toggleEdit()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <span>Editar</span>
+  </button>
+
+  <button id="nav-scan-btn" onclick="openScanner()">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+      <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+      <line x1="8" y1="12" x2="16" y2="12"/>
+    </svg>
+  </button>
+
+  <button class="nav-btn" onclick="toggleMenu()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+    <span>Menú</span>
+  </button>
+</nav>
+
+<!-- Modal escáner -->
+<div id="scanner-modal">
+  <div id="scanner-inner">
+    <div id="scanner-header">
+      <h3>📷 Escanear figurita</h3>
+      <div id="scanner-close" onclick="closeScanner()">✕</div>
+    </div>
+    <div id="video-wrap">
+      <video id="scanner-video" autoplay playsinline muted></video>
+      <div id="scan-frame"></div>
+      <div id="scanner-hint">
+        <span id="scan-pulse" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:6px;animation:pulse 1s infinite;vertical-align:middle;"></span>
+        <span id="scan-attempt-txt">Escaneando...</span>
+      </div>
+    </div>
+    <div id="scanner-body">
+      <div id="scan-status">Apuntá la cámara a la figurita</div>
+      <button id="scan-btn" onclick="manualScan()" style="width:100%;padding:13px;border-radius:12px;border:none;background:#111827;color:white;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:2px;">
+        📷 Capturar ahora
+      </button>
+      <div id="scan-result">
+        <div id="scan-result-inner">
+          <div id="scan-result-label">Figurita detectada</div>
+          <div id="scan-result-name"></div>
+          <div id="scan-result-sub"></div>
+          <div id="scan-result-actions">
+            <button class="scan-action-btn scan-confirm" onclick="confirmScan()">✓ Confirmar</button>
+            <button class="scan-action-btn scan-retry" onclick="retryScan()">↺ Seguir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Popover de repetidas -->
 <div id="rep-popover">
@@ -719,14 +966,210 @@ let state={}, cambios=[], curFilter='all', collapsed={}, saveTimeout=null, editM
 
 function toggleEdit(){
   editMode=!editMode;
-  const btn=document.getElementById('edit-btn');
-  btn.classList.toggle('active',editMode);
-  btn.innerHTML=editMode
-    ?`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Listo`
-    :`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar`;
+  const btn=document.getElementById('nav-edit-btn');
+  btn.classList.toggle('edit-active',editMode);
   document.querySelectorAll('.sticker').forEach(el=>el.classList.toggle('editable',editMode));
   showToast(editMode?'✏️ Modo edición activado':'🔒 Edición desactivada');
 }
+
+// ── Escáner de figuritas ───────────────────────────────────
+let scanStream=null, scanDetected=null;
+
+async function openScanner(){
+  const modal=document.getElementById('scanner-modal');
+  modal.classList.add('open');
+  document.getElementById('scan-result').classList.remove('show');
+  setStatus('Iniciando cámara...','processing');
+  document.getElementById('scan-btn').disabled=true;
+  scanDetected=null;
+  try{
+    // iOS Safari necesita constraints más simples
+    const constraints = [
+      { video: { facingMode: { exact: 'environment' } } },
+      { video: { facingMode: 'environment' } },
+      { video: { facingMode: { ideal: 'environment' } } },
+      { video: true }
+    ];
+    let gotStream = false;
+    for(const c of constraints){
+      try{
+        scanStream = await navigator.mediaDevices.getUserMedia(c);
+        gotStream = true;
+        break;
+      }catch(e){ continue; }
+    }
+    if(!gotStream) throw new Error('no camera');
+    const video=document.getElementById('scanner-video');
+    video.srcObject=scanStream;
+    await video.play();
+    setStatus('Buscando figurita...','processing');
+    startContinuousScan();
+  }catch(e){
+    setStatus('No se pudo acceder a la cámara','error');
+  }
+}
+
+function closeScanner(){
+  stopContinuousScan();
+  document.getElementById('scanner-modal').classList.remove('open');
+  if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null;}
+  document.getElementById('scanner-video').srcObject=null;
+  document.getElementById('scan-result').classList.remove('show');
+  scanDetected=null;
+}
+
+function setStatus(msg,cls){
+  const el=document.getElementById('scan-status');
+  el.textContent=msg; el.className=cls;
+}
+
+// ── Detección continua con Claude Vision ───────────────────
+let scanInterval=null;
+let scanning=false;
+
+function startContinuousScan(){
+  stopContinuousScan();
+  scanAttempts=0;
+  scanInterval=setInterval(()=>{
+    if(!scanning && !scanDetected) runScanFrame(false);
+  }, 2500);
+}
+
+function stopContinuousScan(){
+  if(scanInterval){ clearInterval(scanInterval); scanInterval=null; }
+  scanning=false;
+}
+
+let scanAttempts=0;
+
+// Captura manual — el usuario toca el botón
+async function manualScan(){
+  if(scanning||scanDetected) return;
+  document.getElementById('scan-btn').disabled=true;
+  await runScanFrame(true);
+  document.getElementById('scan-btn').disabled=false;
+}
+
+async function runScanFrame(isManual){
+  scanning=true;
+  scanAttempts++;
+  const attemptEl=document.getElementById('scan-attempt-txt');
+  if(attemptEl) attemptEl.textContent=`Intento ${scanAttempts}...`;
+
+  try{
+    const video=document.getElementById('scanner-video');
+    if(!video.videoWidth||!video.videoHeight){ scanning=false; return; }
+
+    // Captura la imagen completa (no recortar — Claude puede ver todo)
+    const canvas=document.createElement('canvas');
+    // Escalar a máx 800px para no exceder límite de la API
+    const scale=Math.min(1, 800/Math.max(video.videoWidth, video.videoHeight));
+    canvas.width=Math.round(video.videoWidth*scale);
+    canvas.height=Math.round(video.videoHeight*scale);
+    const ctx=canvas.getContext('2d');
+    // Mejorar contraste y nitidez
+    ctx.filter='contrast(1.3) brightness(1.1)';
+    ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    const base64=canvas.toDataURL('image/jpeg',0.92).split(',')[1];
+
+    if(isManual) setStatus('Analizando imagen...','processing');
+
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:50,
+        messages:[{
+          role:'user',
+          content:[
+            {type:'image',source:{type:'base64',media_type:'image/jpeg',data:base64}},
+            {type:'text',text:`Look at this photo of a Panini World Cup 2026 sticker album card.
+Find the sticker code printed on it. It's always a 2-3 letter country code followed by a number, like: ARG17, MEX3, BRA14, FRA20, ESP11, GER10, ENG18, POR15, NED7, BEL2, URU10, COL20, ECU9, USA16, CAN3, MAR4, SEN15, GHA14, CIV17, QAT20, KOR18, JPN12, AUS2, SCO11, CRO9, SUI9, TUN14, NOR15, SWE19, IRN18, NZL17, CZE12, PAR17, RSA20, KSA16, CPV16, COD16, UZB16, BIH18, CUW14, HAI12, TUR20, AUT20, ALG15, JOR15, IRQ9, FWC5, CC1, OO1.
+Reply ONLY with the code and number separated by space, example: "ARG 17"
+If you cannot see a sticker code clearly, reply: "NONE"`}
+          ]
+        }]
+      })
+    });
+
+    if(!res.ok){
+      if(isManual) setStatus(`Error ${res.status}. Reintentá.`,'error');
+      scanning=false; return;
+    }
+    const data=await res.json();
+    const text=(data.content?.[0]?.text||'').trim().toUpperCase().replace(/[^A-Z0-9\s]/g,'').trim();
+
+    if(text==='NONE'||!text){
+      if(isManual) setStatus('No detecté ninguna figurita. Acercá más y re-intentá.','error');
+      scanning=false; return;
+    }
+
+    const result=parseClaudeResponse(text);
+    if(result){
+      scanDetected=result;
+      stopContinuousScan();
+      showScanResult(result);
+      setStatus('¡Figurita detectada!','success');
+    } else {
+      if(isManual) setStatus(`Leí "${text}" pero no coincide con ninguna figurita.`,'error');
+      scanning=false;
+    }
+  }catch(e){
+    if(isManual) setStatus('Error de conexión. Verificá internet.','error');
+    scanning=false;
+  }
+}
+
+function parseClaudeResponse(text){
+  const m=text.match(/\b([A-Z]{2,3})\s*(\d{1,2})\b/);
+  if(!m) return null;
+  const team=m[1], num=parseInt(m[2]);
+  if(!PLAYERS[team]) return null;
+  const maxNum=GROUPS.flatMap(g=>Object.entries(g.teams)).find(([t])=>t===team)?.[1]||0;
+  if(num<1||num>maxNum) return null;
+  return {team,num};
+}
+
+function showScanResult(r){
+  const {team,num}=r;
+  const playerName=(PLAYERS[team]&&PLAYERS[team][num])||'';
+  const k=stateKey(team,num);
+  const v=state[k]||0;
+  const sub=v===0?'No la tenés — se marcará como tengo'
+    :v===1?'Ya la tenés — se marcará como repetida x1'
+    :`Ya tenés ${v-1} repetida${v>2?'s':''} — quedará x${v}`;
+  document.getElementById('scan-result-name').textContent=`${team} ${num}${playerName?' — '+playerName:''}`;
+  document.getElementById('scan-result-sub').textContent=sub;
+  document.getElementById('scan-result').classList.add('show');
+}
+
+function confirmScan(){
+  if(!scanDetected)return;
+  const {team,num}=scanDetected;
+  const k=stateKey(team,num);
+  const v=state[k]||0;
+  if(v===0){state[k]=1;logCambio(team,num,'agregada (escáner)');}
+  else{state[k]=v+1;logCambio(team,num,`repetida x${v} (escáner)`);}
+  saveState();updateSticker(team,num);updateStats();updateGroupProgress();
+  const playerName=(PLAYERS[team]&&PLAYERS[team][num])||`${team} ${num}`;
+  showToast(`✓ ${playerName} guardada`);
+  // Seguir escaneando
+  document.getElementById('scan-result').classList.remove('show');
+  scanDetected=null;
+  setStatus('Buscando figurita...','processing');
+  startContinuousScan();
+}
+
+function retryScan(){
+  document.getElementById('scan-result').classList.remove('show');
+  scanDetected=null;
+  setStatus('Buscando figurita...','processing');
+  startContinuousScan();
+}
+
+// El botón de escanear ya no se usa — se oculta
+function doScan(){ /* no-op, reemplazado por detección continua */ }
 
 function toggleMenu(){ document.getElementById('menu-dropdown').classList.toggle('open'); }
 function closeMenu() { document.getElementById('menu-dropdown').classList.remove('open'); }
